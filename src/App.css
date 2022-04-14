@@ -36,3 +36,14 @@
     transform: rotate(360deg);
   }
 }
+
+.css-gyw9ju-MuiFormControlLabel-root .MuiFormControlLabel-label {
+  font-size: medium;
+}
+
+.btns-container {
+  width: 93%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+}
