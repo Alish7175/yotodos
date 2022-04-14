@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Task from "./Task";
-import Todos from "../data.js";
 import { Container, Button } from "@mui/material/";
 import { nanoid } from 'nanoid';
 import TaskModal from './modal'
@@ -29,10 +28,12 @@ export default function TasksList() {
   );
   const [newTask , setNewTask ] = useState({
     title: '',
-    description: ''
+    description: '',
+    isCompleted: false
   });
   const [updateClick , setUpdateClick] = useState(false);
   const [currentId, setCurrentId] = useState('');
+  const [open, setOpen] = useState(false);// for a MUI Modal
  
   function handleInput(event){
     setNewTask({
@@ -40,7 +41,8 @@ export default function TasksList() {
       [event.target.name] : event.target.value
     })
   }
-  const [open, setOpen] = useState(false);// for a MUI Modal
+  
+
   //mui modal related function ===> starts here
   const handleOpen = () => {
     setOpen(true);
@@ -53,14 +55,17 @@ export default function TasksList() {
 
   //==============> ends here
 
+  //==============>Add task feature starts
   function addTask() {
-    const { title, description} = newTask;
-    setTodosList(prevData => [...prevData, {id: nanoid(), title: title, description: description}])
+    const { title, description, isCompleted} = newTask;
+    setTodosList(prevData => [...prevData, {id: nanoid(), title: title, description: description , isCompleted: isCompleted}])
     newTask.title = '';
     newTask.description = "";
     return newTask;
   }
+  //==============>Add task feature ends
 
+  //==============>Delete task feature starts
   const handleDelete = (id) => {
     
     todosList.map((todo, index) => {
@@ -71,7 +76,9 @@ export default function TasksList() {
     setTodosList([...todosList]);
     return todosList;
   }
+  //==============>Delete task feature ends
 
+  //==============>Update task feature starts
   const updateBtnClick = (id) => {
     setUpdateClick(true);
     setCurrentId(id);
@@ -79,14 +86,14 @@ export default function TasksList() {
   }
 
   const updateTask = () => {
-    const { title, description} = newTask;
+    const { title, description, isCompleted} = newTask;
     let task = todosList.find(todo => {
       return todo.id === currentId
       }) || todosList[0]
     // todosList[todosList.indexOf(task)] = {...task, title: title, description: description};
     setTodosList(todosArray => {
-      const oldTask = todosArray.splice(todosArray.indexOf(task) , 1);
-      const updatedTask = {id: currentId, title: title, description: description};
+      todosArray.splice(todosArray.indexOf(task) , 1);
+      const updatedTask = {id: currentId, title: title, description: description, isCompleted: isCompleted};
       return [updatedTask,...todosArray]
     } )
     console.log(todosList[todosList.indexOf(task)])
@@ -96,6 +103,29 @@ export default function TasksList() {
     handleClose();
     return newTask;     
   }
+  //==============>Update task feature ends
+
+  //==============> handle task complition status starts
+    const taskStatus = (id) => {
+      let task = todosList.find(todo => {
+        return todo.id === id
+        }) || todosList[0]
+      setTodosList(todosArray => {
+        let newTask = todosArray.splice(todosArray.indexOf(task), 1);
+        newTask.id = task.id;
+        newTask.title = task.title;
+        newTask.description = task.description; 
+        newTask.isCompleted = task.isCompleted ? false : true;
+        if (newTask.isCompleted === true) {
+          return [...todosArray, newTask];
+        }else{
+          return [newTask, ...todosArray];
+        }
+        
+      }) 
+      return newTask; 
+    }
+  //==============> handle task complition status ends
 
   useEffect(
     () => {
@@ -113,8 +143,10 @@ export default function TasksList() {
             index = {index}
             title={todo.title} 
             description={todo.description}
+            isCompleted={todo.isCompleted}
             handleDelete = {handleDelete}
             updateBtnClick={updateBtnClick}
+            taskStatus= {taskStatus}
             />
         );
   });

@@ -15,21 +15,20 @@ export default function Task({
   id,
   title,
   description,
+  isCompleted,
   index,
   handleDelete,
   updateBtnClick,
+  taskStatus
 }) {
   //for Accordian one at a time feature
   const [expanded, setExpanded] = useState(false);
-  const [isCompleted, setIsCompleted] = useState(false);
 
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded && panel);
   };
 
-  const taskCompleted = () => {
-    setIsCompleted((prevState) => (prevState = !prevState));
-  };
+  
 
   return (
     <div>
@@ -86,7 +85,7 @@ export default function Task({
             }}
             control={<Checkbox color="success" size="large" />}
             label="Completed"
-            onClick={taskCompleted}
+            onClick={() => taskStatus(id)}
           />
           <ButtonGroup
             variant="contained"
